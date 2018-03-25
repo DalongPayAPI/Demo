@@ -46,7 +46,7 @@ $paramStr = JSON_encode($param);
 //Шифруем параметр запроса
 $cryptoParamStr = \PAYAPI\cryptLib::crypt($paramStr, $cryptoKey);
 //Выполняем вызов функции, получаем шифрованный результат
-$cryptReceitpResult = Receipt($sessionKey, $cryptoParamStr);
+$cryptReceitpResult = ReceiptInfo($sessionKey, $cryptoParamStr);
 //Расшифровываем результат
 $ReceiptResult = \PAYAPI\cryptLib::decrypt($cryptReceitpResult, $cryptoKey);
 echo $ReceiptResult;
@@ -84,4 +84,19 @@ function Receipt($key, $param) {
     return $server_output;
 }
 
+
+function ReceiptInfo($key, $param) {
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL,"https://test-payapi.dalongpay.com/v1/");
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, 'm=receipt&q=\'{"key": "'.$key.'", "param":"'.urlencode($param).'"}\'');
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $server_output = curl_exec ($ch);
+
+    curl_close ($ch);
+    return $server_output;
+}
 
